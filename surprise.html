@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>给你的专属小惊喜 ✨</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;font-family:system-ui,sans-serif}
+  body{background:#fdf6f8;padding:20px;line-height:1.6}
+  .container{max-width:700px;margin:0 auto}
+  .title{text-align:center;font-size:28px;color:#e63946;margin-bottom:30px}
+  .card{background:white;border-radius:16px;padding:25px;margin-bottom:25px;box-shadow:0 4px 12px rgba(0,0,0,0.08)}
+  .card h2{font-size:20px;color:#333;margin-bottom:15px}
+  .btn{padding:10px 20px;border:none;border-radius:30px;background:#e63946;color:white;font-size:16px;cursor:pointer;transition:0.3s;margin-top:10px}
+  .btn:hover{background:#c1121f;transform:scale(1.03)}
+  .progress-wrap{width:100%;height:16px;background:#eee;border-radius:8px;overflow:hidden;margin:10px 0}
+  .progress{height:100%;width:0%;background:linear-gradient(90deg,#4361ee,#7209b7);transition:width 0.3s}
+  .monster{width:100px;height:100px;background:#ff4757;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;margin:15px auto;cursor:pointer;transition:0.2s}
+  .monster:hover{transform:scale(1.1)}
+  #heart-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999}
+  .heart{position:absolute;pointer-events:none}
+  @keyframes float{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-500px) scale(0);opacity:0}}
+  @keyframes fall{0%{transform:translateY(-10vh) scale(0);opacity:1}100%{transform:translateY(110vh) scale(1);opacity:0}}
+</style>
+</head>
+<body>
+<div id="heart-container"></div>
+<div class="container">
+  <h1 class="title">给你的专属小惊喜 ✨</h1>
+
+  <!-- 1. 夸夸机 -->
+  <div class="card">
+    <h2>💖 专属夸夸机</h2>
+    <div id="praise-text" style="font-size:18px;min-height:50px">点击按钮，接收夸奖～</div>
+    <button class="btn" onclick="showPraise()">再来一句</button>
+  </div>
+
+  <!-- 2. 心动进度条 -->
+  <div class="card">
+    <h2>💓 心动进度条</h2>
+    <div class="progress-wrap"><div class="progress" id="love-bar"></div></div>
+    <div id="love-percent" style="font-size:18px">0%</div>
+    <button class="btn" onclick="addLove()">戳我 + 心动</button>
+    <div id="love-final" style="display:none;color:#7209b7;font-weight:bold;margin-top:10px">100% 心动！我真的超喜欢你～</div>
+  </div>
+
+  <!-- 3. 爱心特效 -->
+  <div class="card">
+    <h2>❤️ 爱心发射</h2>
+    <p>点击 / 滑动屏幕，发射爱心雨～</p>
+    <button class="btn" onclick="startRain()">开启爱心雨</button>
+  </div>
+
+  <!-- 4. 英雄游戏 -->
+  <div class="card">
+    <h2>🎮 你是我的英雄</h2>
+    <div id="level" style="font-size:18px">Lv.1</div>
+    <div id="exp" style="color:#666">经验值：0 / 100</div>
+    <div class="monster" id="monster" onclick="hit()">👾</div>
+    <div id="game-final" style="display:none;color:#ffcc00;font-weight:bold;margin-top:10px">恭喜满级！你是我永远的超级英雄～</div>
+  </div>
+</div>
+
+<script>
+  // 1. 夸夸机
+  const praises = [
+    "你认真做事的样子真的超有魅力！",
+    "跟你在一起，我每天都很安心。",
+    "你真的很厉害，什么事都能搞定～",
+    "有你在，我什么都不怕啦！",
+    "你笑起来的时候，世界都亮了。",
+    "你是我见过最靠谱、最温柔的人。",
+    "跟你聊天，我能聊一整天都不腻。",
+    "你真的超棒，我超喜欢你的！",
+    "你就是我的安全感来源呀～",
+    "有你这样的男朋友，我太幸福啦！"
+  ];
+  function showPraise() {
+    const textEl = document.getElementById('praise-text');
+    textEl.textContent = praises[Math.floor(Math.random() * praises.length)];
+    createHearts(event.clientX, event.clientY, 5);
+  }
+
+  // 2. 心动进度条
+  let lovePercent = 0;
+  function addLove() {
+    if (lovePercent >= 100) return;
+    lovePercent += Math.floor(Math.random() * 10) + 5;
+    if (lovePercent > 100) lovePercent = 100;
+    document.getElementById('love-bar').style.width = lovePercent + '%';
+    document.getElementById('love-percent').textContent = lovePercent + '%';
+    if (lovePercent === 100) document.getElementById('love-final').style.display = 'block';
+    createHearts(event.clientX, event.clientY, 8);
+  }
+
+  // 3. 爱心雨与点击特效
+  let rainInterval;
+  function startRain() {
+    if (rainInterval) clearInterval(rainInterval);
+    rainInterval = setInterval(() => {
+      const x = Math.random() * window.innerWidth;
+      createHeart(x, -50, 'fall');
+    }, 300);
+  }
+  function createHearts(x, y, count) {
+    for(let i=0; i<count; i++) createHeart(x, y, 'float');
+  }
+  function createHeart(x, y, anim) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.innerHTML = '❤️';
+    h.style.left = x + 'px';
+    h.style.top = y + 'px';
+    h.style.fontSize = (16 + Math.random() * 20) + 'px';
+    h.style.animation = `${anim} 2s linear forwards`;
+    document.getElementById('heart-container').appendChild(h);
+    setTimeout(() => h.remove(), 2000);
+  }
+  document.addEventListener('click', e => createHearts(e.clientX, e.clientY, 6));
+  document.addEventListener('mousemove', e => {
+    if(Math.random()>0.8) createHeart(e.clientX, e.clientY, 'float');
+  });
+
+  // 4. 英雄游戏
+  let level = 1, exp = 0, need = 100;
+  function hit() {
+    exp += Math.floor(Math.random() * 20) + 10;
+    if (exp >= need) { level++; exp = 0; need = Math.floor(need * 1.3); }
+    document.getElementById('level').textContent = `Lv.${level}`;
+    document.getElementById('exp').textContent = `经验值：${exp} / ${need}`;
+    const m = document.getElementById('monster');
+    m.style.transform = 'scale(0.9)';
+    setTimeout(() => m.style.transform = 'scale(1)', 100);
+    createHearts(event.clientX, event.clientY, 4);
+    if (level >= 10) {
+      m.style.display = 'none';
+      document.getElementById('game-final').style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
