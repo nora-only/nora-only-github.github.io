@@ -70,20 +70,41 @@
     <button class="reset-btn" onclick="resetGame()">重置游戏</button>
     <button class="cat-btn" id="catBtn" onclick="catchCat()">喵～</button>
 
+    <!-- 音频元素（隐藏） -->
+    <audio id="catSound" preload="auto">
+        <!-- 使用免费开源的猫咪音效，无需本地文件 -->
+        <source src="https://assets.mixkit.co/sfx/preview/mixkit-meow-sound-1634.mp3" type="audio/mpeg">
+        <!-- 备用音效链接（防止第一个失效） -->
+        <source src="https://www.soundjay.com/meow/sounds/meow-07.mp3" type="audio/mpeg">
+    </audio>
+
     <script>
         // 获取元素
         const catBtn = document.getElementById('catBtn');
         const scoreSpan = document.getElementById('score');
+        const catSound = document.getElementById('catSound'); // 音频元素
         let score = 0;
 
         // 初始化按钮位置
         moveCat();
 
-        // 抓住猫咪的逻辑
+        // 抓住猫咪的逻辑（新增音频播放）
         function catchCat() {
             score++;
             scoreSpan.textContent = score;
+            playCatSound(); // 播放音效
             moveCat(); // 瞬移到新位置
+        }
+
+        // 播放猫咪音效
+        function playCatSound() {
+            // 重置音频播放位置（避免连续点击时音效卡顿）
+            catSound.currentTime = 0;
+            // 播放音频
+            catSound.play().catch(err => {
+                // 处理浏览器自动播放限制（首次点击需用户交互）
+                console.log("音效播放提示：", err);
+            });
         }
 
         // 随机移动猫咪按钮
@@ -108,6 +129,11 @@
 
         // 窗口大小变化时重新调整位置
         window.onresize = moveCat;
-    </script>
+
+        // 解决浏览器自动播放限制：首次点击页面任意位置解锁音频
+        document.body.addEventListener('click', () => {
+            catSound.load();
+        }, { once: true });
+    </style>
 </body>
 </html>
