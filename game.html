@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>躲猫猫小猫咪 🐱</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+        body {
+            background-color: #fdf6f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 30px;
+        }
+        .title {
+            color: #e63946;
+            font-size: 28px;
+            text-align: center;
+        }
+        .score {
+            font-size: 22px;
+            color: #333;
+        }
+        /* 躲猫猫按钮 */
+        .cat-btn {
+            width: 80px;
+            height: 80px;
+            border: none;
+            border-radius: 50%;
+            background-color: #ff9a9e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            position: absolute;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cat-btn:hover {
+            background-color: #e63946;
+            transform: scale(1.1);
+        }
+        .reset-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            background-color: #457b9d;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .reset-btn:hover {
+            background-color: #1d3557;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">🐱 抓住小猫咪 🐱</h1>
+    <div class="score">得分：<span id="score">0</span></div>
+    <button class="reset-btn" onclick="resetGame()">重置游戏</button>
+    <button class="cat-btn" id="catBtn" onclick="catchCat()">喵～</button>
+
+    <script>
+        // 获取元素
+        const catBtn = document.getElementById('catBtn');
+        const scoreSpan = document.getElementById('score');
+        let score = 0;
+
+        // 初始化按钮位置
+        moveCat();
+
+        // 抓住猫咪的逻辑
+        function catchCat() {
+            score++;
+            scoreSpan.textContent = score;
+            moveCat(); // 瞬移到新位置
+        }
+
+        // 随机移动猫咪按钮
+        function moveCat() {
+            // 计算页面可显示区域（避免按钮出界）
+            const windowWidth = window.innerWidth - 100;
+            const windowHeight = window.innerHeight - 100;
+            // 生成随机坐标
+            const randomX = Math.floor(Math.random() * windowWidth);
+            const randomY = Math.floor(Math.random() * windowHeight);
+            // 设置按钮位置
+            catBtn.style.left = `${randomX}px`;
+            catBtn.style.top = `${randomY}px`;
+        }
+
+        // 重置游戏
+        function resetGame() {
+            score = 0;
+            scoreSpan.textContent = score;
+            moveCat();
+        }
+
+        // 窗口大小变化时重新调整位置
+        window.onresize = moveCat;
+    </script>
+</body>
+</html>
