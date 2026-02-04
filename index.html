@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>我们和好吧 ❤️</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: #fdf6f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      max-width: 500px;
+      width: 100%;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      text-align: center;
+      position: relative;
+    }
+    h1 {
+      font-size: 26px;
+      color: #e63946;
+      margin-bottom: 20px;
+    }
+    .content {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 30px;
+    }
+    .btn-group {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 30px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-yes {
+      background: #e63946;
+      color: white;
+    }
+    .btn-yes:hover {
+      background: #c1121f;
+    }
+    .btn-no {
+      background: #eee;
+      color: #666;
+      position: relative;
+    }
+    /* 成功页样式 */
+    .success-page {
+      display: none;
+      text-align: center;
+    }
+    .success-page h2 {
+      color: #2a9d8f;
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+    .success-page p {
+      font-size: 16px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <!-- 主页面 -->
+    <div id="main-page">
+      <h1>我们和好吧 ❤️</h1>
+      <div class="content">
+        对不起，我知道我错了。<br>
+        我真的很珍惜你，不想因为一点小事就失去你。<br>
+        再给我一次机会，我们和好好不好？
+      </div>
+      <div class="btn-group">
+        <button class="btn btn-yes" id="btn-yes">好呀，我们和好</button>
+        <button class="btn btn-no" id="btn-no">我再想想…</button>
+      </div>
+    </div>
+
+    <!-- 成功页面 -->
+    <div class="success-page" id="success-page">
+      <h2>和好成功！🎉</h2>
+      <p>谢谢你愿意原谅我，我们以后要一直好好的～</p>
+    </div>
+  </div>
+
+  <script>
+    const btnYes = document.getElementById('btn-yes');
+    const btnNo = document.getElementById('btn-no');
+    const mainPage = document.getElementById('main-page');
+    const successPage = document.getElementById('success-page');
+
+    // 点击“和好” → 显示成功页
+    btnYes.addEventListener('click', () => {
+      mainPage.style.display = 'none';
+      successPage.style.display = 'block';
+    });
+
+    // “再想想”按钮：鼠标靠近就跑
+    btnNo.addEventListener('mouseover', () => {
+      // 随机位置
+      const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 40);
+      const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 40);
+      btnNo.style.position = 'fixed';
+      btnNo.style.left = x + 'px';
+      btnNo.style.top = y + 'px';
+    });
+  </script>
+</body>
+</html>
