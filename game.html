@@ -19,15 +19,22 @@
             justify-content: center;
             min-height: 100vh;
             gap: 30px;
+            position: relative; /* 新增：让绝对定位的按钮基于body定位 */
+            overflow: hidden; /* 防止按钮超出视窗导致滚动 */
         }
         .title {
             color: #e63946;
             font-size: 28px;
             text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
         .score {
             font-size: 22px;
             color: #333;
+            background-color: #fff;
+            padding: 8px 20px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         /* 躲猫猫按钮 */
         .cat-btn {
@@ -45,10 +52,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 10; /* 确保按钮在最上层 */
         }
         .cat-btn:hover {
             background-color: #e63946;
             transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
         }
         .reset-btn {
             padding: 10px 20px;
@@ -58,9 +67,12 @@
             color: white;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.2s ease;
         }
         .reset-btn:hover {
             background-color: #1d3557;
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -72,49 +84,60 @@
 
     <!-- 音频元素（隐藏） -->
     <audio id="catSound" preload="auto">
-        <!-- 使用免费开源的猫咪音效，无需本地文件 -->
+        <!-- 替换为你的阿里嘎多音效链接 -->
+        <source src="https://raw.githubusercontent.com/nora-only/nora-only-github.github.io/main/%E9%98%BF%E9%87%8C%E5%98%8E%E5%A4%9A%E5%96%B5%E5%96%B5.MP3" type="audio/mpeg">
+        <!-- 备用音效（防止主链接失效） -->
         <source src="https://assets.mixkit.co/sfx/preview/mixkit-meow-sound-1634.mp3" type="audio/mpeg">
-        <!-- 备用音效链接（防止第一个失效） -->
-        <source src="https://www.soundjay.com/meow/sounds/meow-07.mp3" type="audio/mpeg">
     </audio>
 
     <script>
         // 获取元素
         const catBtn = document.getElementById('catBtn');
         const scoreSpan = document.getElementById('score');
-        const catSound = document.getElementById('catSound'); // 音频元素
+        const catSound = document.getElementById('catSound');
         let score = 0;
 
         // 初始化按钮位置
         moveCat();
 
-        // 抓住猫咪的逻辑（新增音频播放）
+        // 抓住猫咪的逻辑
         function catchCat() {
             score++;
             scoreSpan.textContent = score;
-            playCatSound(); // 播放音效
-            moveCat(); // 瞬移到新位置
+            playCatSound();
+            moveCat();
         }
 
-        // 播放猫咪音效
+        // 播放音效（增强兼容性）
         function playCatSound() {
-            // 重置音频播放位置（避免连续点击时音效卡顿）
-            catSound.currentTime = 0;
-            // 播放音频
-            catSound.play().catch(err => {
-                // 处理浏览器自动播放限制（首次点击需用户交互）
-                console.log("音效播放提示：", err);
-            });
+            try {
+                // 重置播放位置
+                catSound.currentTime = 0;
+                // 播放音频
+                const playPromise = catSound.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(err => {
+                        console.log("音效播放提示：", err);
+                        // 降级处理：创建临时音频播放
+                        const tempAudio = new Audio(catSound.src);
+                        tempAudio.play();
+                    });
+                }
+            } catch (e) {
+                console.error("播放音效出错：", e);
+            }
         }
 
-        // 随机移动猫咪按钮
+        // 随机移动猫咪按钮（优化边界计算）
         function moveCat() {
-            // 计算页面可显示区域（避免按钮出界）
-            const windowWidth = window.innerWidth - 100;
-            const windowHeight = window.innerHeight - 100;
-            // 生成随机坐标
-            const randomX = Math.floor(Math.random() * windowWidth);
-            const randomY = Math.floor(Math.random() * windowHeight);
+            // 按钮尺寸
+            const btnSize = 80;
+            // 计算可显示区域（避免按钮出界）
+            const windowWidth = window.innerWidth - btnSize;
+            const windowHeight = window.innerHeight - btnSize;
+            // 生成随机坐标（确保按钮完全在视窗内）
+            const randomX = Math.max(0, Math.floor(Math.random() * windowWidth));
+            const randomY = Math.max(0, Math.floor(Math.random() * windowHeight));
             // 设置按钮位置
             catBtn.style.left = `${randomX}px`;
             catBtn.style.top = `${randomY}px`;
@@ -128,12 +151,12 @@
         }
 
         // 窗口大小变化时重新调整位置
-        window.onresize = moveCat;
+        window.addEventListener('resize', moveCat);
 
-        // 解决浏览器自动播放限制：首次点击页面任意位置解锁音频
+        // 解决浏览器自动播放限制：首次点击页面解锁音频
         document.body.addEventListener('click', () => {
             catSound.load();
         }, { once: true });
-    </style>
+    </script>
 </body>
 </html>
